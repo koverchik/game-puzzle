@@ -1,7 +1,7 @@
 body{
   background-image: url(/assets/ornament2.png);
   background-attachment: scroll;
-  font-size: 14px;
+  font-size: 16px;
   font-family: 'Kosugi Maru', sans-serif;
   color: #0A0909;
   }
@@ -18,11 +18,12 @@ body{
   background: white;
   width: 80%;
   margin-top: 100px;
-  height: 600px;
+
   position: relative;
 }
 
 #scoreboard{
+font-size: 1.2rem;
 display: flex;
 justify-content: space-between;
 align-items: center;
@@ -145,3 +146,73 @@ cursor: pointer;
     }
 
  @keyframes move_menu { from { opacity: 0; } to { opacity: 1; }  }
+
+ /* board */
+
+#board-game{
+  background-image: url(/assets/bacground.jpg);
+  width: 450px;
+  height: 450px;
+  border: 15px ridge #CDCDCD;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+#wapper-board{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+}
+.pise-all{
+  height: calc(450px/ 4);
+  width: calc(450px/ 4);
+  box-sizing: border-box;
+  user-select: none;
+  margin: 0;
+  padding: 0;
+}
+.piece-one{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  font-family: 'Kosugi Maru', sans-serif;
+  font-size: 3rem;
+  border: 2px dashed #fff;
+  background-color: #d90e23;
+    -moz-box-shadow: 0 0 0 3px #d90e23, 2px 1px 4px 4px rgba(10,10,0,.5);
+    -webkit-box-shadow: 0 0 0 3px #d90e23, 2px 1px 4px 4px rgba(10,10,0,.5);
+    -o-box-shadow: 0 0 0 3px #d90e23, 2px 1px 4px 4px rgba(10,10,0,.5);
+    box-shadow: 0 0 0 3px #d90e23, 2px 1px 6px 4px rgba(10,10,0,.5);
+
+    background-image: -moz-linear-gradient(0deg, rgba(0,0,0,.25) 50%, transparent 10%),-moz-linear-gradient(rgba(0,0,0,.25) 50%, transparent 50%);
+    background-image: -webkit-linear-gradient(0deg, rgba(0,0,0,.25) 50%, transparent 10%),-webkit-linear-gradient(rgba(0,0,0,.25) 50%, transparent 50%);
+    background-image: -o-linear-gradient(0deg, rgba(0,0,0,.25) 50%, transparent 10%),-o-linear-gradient(rgba(0,0,0,.25) 50%, transparent 50%);
+    background-size:10px 10px;
+}
+
+@keyframes move_piece_right {
+
+from {  position: relative; right:calc(450px/ 4);)}
+to  {   position: relative; right:0;} }
+
+
+@keyframes move_piece_left {
+
+from {position: relative; left:calc(450px/ 4);)}
+to  {position: relative; left:0;} }
+
+@keyframes move_piece_top {
+
+from {position: relative; top:calc(450px/ 4);)}
+to  {position: relative; top:0;} }
+
+@keyframes move_piece_bottom {
+
+from {position: relative; bottom:calc(450px/ 4);)}
+to  {position: relative; bottom:0;} }
