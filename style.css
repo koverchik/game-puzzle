@@ -198,24 +198,25 @@ cursor: pointer;
 
 @keyframes move_piece_right {
 
-from {position: relative; right: (calc(450px/ 4));)}
-to  {position: relative; right:0;} }
-
+from {position: relative; right: calc(450px/ 4);}
+to  { position: relative; right:0;} }
 
 @keyframes move_piece_left {
 
-from {position: relative; left:calc(450px/ 4);)}
+from {position: relative; left: calc(450px/ 4);}
 to  {position: relative; left:0;} }
 
 @keyframes move_piece_top {
 
-from {position: relative; top:calc(450px/ 4);)}
+from {position: relative; top: calc(450px/ 4);)}
 to  {position: relative; top:0;} }
 
 @keyframes move_piece_bottom {
 
 from {position: relative; bottom:calc(450px/ 4);)}
-to  {position: relative; bottom:0;} }
+to {position: relative; bottom:0;}
+
+ }
 
 #change-block{
   display: flex;
@@ -241,7 +242,6 @@ to  {position: relative; bottom:0;} }
     margin-left: 30px;
     height: 30px;
     width: 30px;
-
 }
 
 #back-button-sound{
@@ -267,5 +267,4 @@ to  {position: relative; bottom:0;} }
 }
 #change-block div{
   margin: 25px 0;
-
 }

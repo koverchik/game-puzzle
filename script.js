@@ -34,6 +34,7 @@ sound:{
 
 scoreboard:{
   now: null,
+  score: 0,
   max: null
 },
 
@@ -75,7 +76,7 @@ _time(){
 },
 _steps(){
   let fragment = new DocumentFragment();
-  fragment =`<p>Шаги:</p>`;
+  fragment =`<p>Шаги:<span id="step-one-game">${this.scoreboard.score}</span></p>`;
   this.scoreboard.now.insertAdjacentHTML("beforeend", fragment);
 },
 
@@ -145,7 +146,7 @@ _settings(){
         <div id="change-block">
           <div id="music-setting">
             <p>Фоновая музыка</p>
-              <audio id="background_music" src="assets/background_music.mp3"></audio>
+              <audio id="background_music" src="assets/background_music.mp3" loop="loop"></audio>
               <input id="music-menu" type="checkbox" name="music" value="Музыка" ${this.sound.music ? 'checked' : ''}>
           </div>
           <div id="sound-setting">
@@ -219,7 +220,6 @@ _pieces(){
       newElem.classList.add("piece-one");
     }else{
     newElem.setAttribute("id", "empty-plase");
-
     };
     newElem.setAttribute("data-id", i+1);
     newElem.classList.add("pise-all");
@@ -242,8 +242,7 @@ _empty(newElem){
       this.empty.x = Math.ceil(newElem.getBoundingClientRect().x);
       this.empty.bottom = Math.ceil(newElem.getBoundingClientRect().bottom);
       this.empty.right = Math.ceil(newElem.getBoundingClientRect().right);
-
-},
+    },
 
 _clickChangePlase(elem){
 
@@ -268,30 +267,39 @@ _clickChangePlase(elem){
     if(this.empty.bottom == topPositonElem){direction = "top";}
     if(this.empty.top  == bottomPositonElem){direction = "bottom";}
     this.empty.elem = elem;
+
     this.empty.top = Math.ceil(elem.getBoundingClientRect().top);
     this.empty.y = Math.ceil(elem.getBoundingClientRect().y);
     this.empty.left = Math.ceil(elem.getBoundingClientRect().left);
     this.empty.x = Math.ceil(elem.getBoundingClientRect().x);
     this.empty.bottom = Math.ceil(elem.getBoundingClientRect().bottom);
     this.empty.right = Math.ceil(elem.getBoundingClientRect().right);
-    this._animation(direction);
+
+    // this._animation(direction);
     if(this.sound.bell == true){this._audioMove();}
+    this.scoreboard.score  = this.scoreboard.score  + 1;
+    document.getElementById("step-one-game").innerText = this.scoreboard.score;
 
   }
 },
 _animation(direction){
 
+
   if(direction == "right"){
-    this.empty.elem.style.animation = "move_piece_right 2s 1";
+    this.empty.elem.style.animation = "move_piece_right 2s ease 0s forwards 1";
+
   }
   if(direction == "left"){
-    this.empty.elem.style.animation = "move_piece_left 2s 1";
+    this.empty.elem.style.animation = "move_piece_left 2s ease 0s forwards 1";
+
   }
   if(direction == "top"){
-    this.empty.elem.style.animation = "move_piece_top 2s 1";
+    this.empty.elem.style.animation = "move_piece_top 2s ease 0s forwards 1";
+
   }
   if(direction == "bottom"){
-    this.empty.elem.style.animation = "move_piece_bottom 2s 1";
+    this.empty.elem.style.animation = "move_piece_bottom 2s ease 0s forwards 1";
+
   }
 },
 
