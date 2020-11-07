@@ -196,10 +196,28 @@ _settings(){
 
 _switch(){
 
-
-
-
 },
+
+_generation(){
+
+  let newSetValue = new Set();
+  function getRandom(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function createNewSet(newSetValue) {
+
+    if(newSetValue.size < 15){
+      newSetValue.add(getRandom(1, 15));
+      createNewSet(newSetValue);
+    }
+    return newSetValue;
+  }
+  this._pieces(Array.from(createNewSet(newSetValue)));
+
+  },
 
 _board(){
   let fragment = new DocumentFragment();
@@ -210,10 +228,12 @@ _board(){
     </div>
   </div>`;
   this.elements.puzzleContainer.insertAdjacentHTML("beforeend", fragment);
-  this._pieces();
+
+  this._generation();
 },
-_pieces(){
-  let arrayPieces = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+
+_pieces(arrayPieces){
+
   for (var i = 0; i < 16; i++) {
     let newElem = document.createElement("div");
     if(arrayPieces[i] != undefined){
