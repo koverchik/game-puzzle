@@ -1,5 +1,5 @@
 body{
-  background-image: url(/assets/ornament2.png);
+  background-image: url(assets/ornament2.png);
   background-attachment: scroll;
   font-size: 16px;
   font-family: 'Kosugi Maru', sans-serif;
@@ -150,7 +150,7 @@ cursor: pointer;
  /* board */
 
 #board-game{
-  background-image: url(/assets/bacground.jpg);
+  background-image: url(assets/bacground.jpg);
   width: 450px;
   height: 450px;
   border: 15px ridge #CDCDCD;
@@ -198,8 +198,8 @@ cursor: pointer;
 
 @keyframes move_piece_right {
 
-from {  position: relative; right:calc(450px/ 4);)}
-to  {   position: relative; right:0;} }
+from {position: relative; right: (calc(450px/ 4));)}
+to  {position: relative; right:0;} }
 
 
 @keyframes move_piece_left {
@@ -216,3 +216,56 @@ to  {position: relative; top:0;} }
 
 from {position: relative; bottom:calc(450px/ 4);)}
 to  {position: relative; bottom:0;} }
+
+#change-block{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  font-size: 2rem;
+  padding: 20px;
+  margin-top: 80px;
+  font-family: 'Kosugi Maru', sans-serif;
+  border-bottom: 2px solid white;
+  display: none;
+}
+
+#change-block div, #back-button-sound{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+#change-block input{
+    margin-left: 30px;
+    height: 30px;
+    width: 30px;
+
+}
+
+#back-button-sound{
+  cursor: pointer;
+}
+
+#playing-reach-size input{
+  width: 100%;
+}
+
+#playing-reach-size{
+  flex-direction: column !important;
+  margin-bottom: 20px;
+}
+
+#range-size{
+  margin: 20px;
+}
+
+#change-block p{
+  margin: 0;
+  padding: 0;
+}
+#change-block div{
+  margin: 25px 0;
+
+}

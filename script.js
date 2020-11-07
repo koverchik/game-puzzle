@@ -3,8 +3,15 @@ const Puzzle = {
 elements:{
   main: null,
   puzzleContainer: null,
+  menu: null,
   number: []
 },
+
+boardView:{
+size: 4,
+type: "namber"
+},
+
 empty:{
   elem: null,
   top: null,
@@ -53,6 +60,7 @@ init(){
   this._board();
   this._footer();
   this._menu();
+  this._settings();
 },
 
 _time(){
@@ -81,12 +89,16 @@ _footer(){
   let fragment = new DocumentFragment();
   fragment =`<div id="wrapper-footer">
     <div class="button-container"><button class="button-main">Новая игра</button></div>
-    <div class="button-main sound-game-border" id="sound-button-click"><button class="sound-game">&#128361;</button></div>
+    <div class="button-main" id="sound-button-click"><button class="sound-game">&#128361;</button></div>
     <div class="button-container" id="menu-button"><button class="button-main">Меню</button></div>
     </div>`;
   this.elements.puzzleContainer.insertAdjacentHTML("beforeend", fragment);
   document.getElementById("sound-button-click").addEventListener("click", () => {
-    document.getElementById("sound-button-click").classList.toggle("sound-game-border");
+    this.sound.bell ? document.getElementById("sound-button-click").classList.add("sound-game-border"): document.getElementById("sound-button-click").classList.remove("sound-game-border");
+    this.sound.bell ? this.sound.bell = false : this.sound.bell = true;
+    this.sound.bell ? document.getElementById("sound-menu").checked = true : document.getElementById("sound-menu").checked = false;
+
+    console.log(this.sound.bell);
         });
 
   document.getElementById("menu-button").addEventListener("click", () => {
@@ -113,10 +125,79 @@ _menu(){
     </div>`;
 
   this.elements.puzzleContainer.insertAdjacentHTML("beforeend", fragment);
+  this.elements.menu = document.getElementById("logo-style");
+  document.getElementById("settings").addEventListener("click", () => {
+      document.getElementById("change-block").style.display = "block";
+      document.getElementById("item-menu").style.display = "none";
+
+  });
+
   document.getElementById("back-button").addEventListener("click", () => {
     document.getElementById("wrapper-menu").style.visibility = "hidden";
     document.getElementById("wrapper-menu").style.animation = "none";
           });
+},
+
+_settings(){
+  let fragment = new DocumentFragment();
+
+  fragment =`
+        <div id="change-block">
+          <div id="music-setting">
+            <p>Фоновая музыка</p>
+              <audio id="background_music" src="assets/background_music.mp3"></audio>
+              <input id="music-menu" type="checkbox" name="music" value="Музыка" ${this.sound.music ? 'checked' : ''}>
+          </div>
+          <div id="sound-setting">
+            <p>Звук</p>
+            <audio id="one-sound" src="assets/up-down.mp3"></audio>
+            <input id="sound-menu" type="checkbox" name="sound" value="Звук" ${this.sound.bell ? 'checked' : ''}>
+        </div>
+        <div id="playing-reach-size">
+         <label for="range-size">Размер поля</label>
+         <input id="range-size" type="range" name="reach-size" min="3" max="8" step="1" value="${this.boardView.size}" list="size-board">
+         <datalist id="size-board">
+            <option value="3" label="3&#10005;3">3&#10005;3</option>
+              <option value="4" label="4&#10005;4">4&#10005;4</option>
+                <option value="5" label="5&#10005;5">5&#10005;5</option>
+                  <option value="6" label="6&#10005;6">6&#10005;6</option>
+                    <option value="7" label="7&#10005;7">7&#10005;7</option>
+                      <option value="8" label="8&#10005;8">8&#10005;8</option>
+          </datalist>
+        <div id="description-size-board">${this.boardView.size}&#10005;${this.boardView.size}</div>
+        </select>
+        </div>
+        <div id="back-button-sound">&#128281;</div>
+        </div>`;
+
+        this.elements.menu.insertAdjacentHTML("afterend", fragment);
+
+    document.getElementById("range-size").addEventListener("mouseup", () => {
+      this.boardView.size = document.getElementById("range-size").value;
+      document.getElementById("description-size-board").innerText = `${this.boardView.size}✕${this.boardView.size}`;
+    });
+
+  document.getElementById("back-button-sound").addEventListener("click", () => {
+      document.getElementById("item-menu").style.display = "block";
+      document.getElementById("change-block").style.display = "none";
+  });
+  document.getElementById("music-menu").addEventListener("click", () => {
+      document.getElementById("music-menu").checked == true ? this.sound.music = true : this.sound.music = false;
+      this.sound.music ? document.getElementById("background_music").play() : document.getElementById("background_music").pause();
+
+  });
+
+  document.getElementById("sound-menu").addEventListener("click", () => {
+    document.getElementById("sound-menu").checked == true ? this.sound.bell = true : this.sound.bell = false;
+    this.sound.bell ? document.getElementById("sound-button-click").classList.remove("sound-game-border") : document.getElementById("sound-button-click").classList.add("sound-game-border");
+  });
+},
+
+_switch(){
+
+
+
+
 },
 
 _board(){
@@ -170,19 +251,7 @@ _clickChangePlase(elem){
   let leftPositonElem = Math.ceil(elem.getBoundingClientRect().left);
   let bottomPositonElem = Math.ceil(elem.getBoundingClientRect().bottom);
   let topPositonElem = Math.ceil(elem.getBoundingClientRect().top);
-  // console.log(rightPositonElem);
-  // console.log("empty right " + this.empty.right);
-  // console.log(leftPositonElem );
-  //   console.log("empty left " + this.empty.left);
-  // console.log(topPositonElem );
-  //   console.log( "empty top " +  this.empty.top);
-  // console.log(bottomPositonElem );
-  // console.log("empty bottom " + this.empty.bottom);
 
-  // console.log(this.empty.left == rightPositonElem && this.empty.top == topPositonElem && this.empty.bottom == bottomPositonElem);
-  // console.log(this.empty.right == leftPositonElem && this.empty.top == topPositonElem && this.empty.bottom == bottomPositonElem);
-  // console.log(this.empty.top  == bottomPositonElem && this.empty.left == leftPositonElem && this.empty.right == rightPositonElem);
-  // console.log(this.empty.bottom == topPositonElem && this.empty.left == leftPositonElem && this.empty.right == rightPositonElem);
   if((this.empty.left == rightPositonElem && this.empty.top == topPositonElem && this.empty.bottom == bottomPositonElem)||
   (this.empty.right == leftPositonElem && this.empty.top == topPositonElem && this.empty.bottom == bottomPositonElem) ||
   (this.empty.top  == bottomPositonElem && this.empty.left == leftPositonElem && this.empty.right == rightPositonElem)||
@@ -211,23 +280,26 @@ _clickChangePlase(elem){
   }
 },
 _animation(direction){
+
   if(direction == "right"){
-    this.empty.elem.style.animation = "move_piece_right 1s 1";
+    this.empty.elem.style.animation = "move_piece_right 2s 1";
   }
   if(direction == "left"){
-    this.empty.elem.style.animation = "move_piece_left 1s 1";
+    this.empty.elem.style.animation = "move_piece_left 2s 1";
   }
   if(direction == "top"){
-    this.empty.elem.style.animation = "move_piece_top 1s 1";
+    this.empty.elem.style.animation = "move_piece_top 2s 1";
   }
   if(direction == "bottom"){
-    this.empty.elem.style.animation = "move_piece_bottom 1s 1";
+    this.empty.elem.style.animation = "move_piece_bottom 2s 1";
   }
 },
 
 _audioMove(){
 document.getElementById("one-sound").play();
 }
+
+
     }
 window.addEventListener("DOMContentLoaded", function () {
   Puzzle.init();
