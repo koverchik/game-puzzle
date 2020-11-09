@@ -88,12 +88,10 @@ _startGame(){
 _time(){
   let start = Date.now();
   this.time.start = start;
-  //Часы переводим в минуты
+
   let min = Math.floor((start - Math.floor(start / 3600000)*3600000)/60000);
 
-  //Минуты равны секундам (первые 2 цифры)
   let sec = Math.floor((start - Math.floor(start / 60000)*60000)/1000);
-
 
   this._timer(this.time);
 },
@@ -105,7 +103,8 @@ _timer(time){
   let nowTime = Date.now();
   let param = this.time;
 
-  let timecount = nowTime - time.start + time.countdown;
+  let timecount = nowTime - time.start;
+   // + time.countdown;
   time.countdown = timecount;
 
   let min = addZero(Math.floor((timecount - Math.floor(timecount / 3600000)*3600000)/60000));
@@ -119,7 +118,6 @@ _timer(time){
 
     document.getElementById("pause-game-button").addEventListener("click", () => {
       document.getElementById("wrapper-start-button").style.display = "flex";
-
       clearInterval(timeInterval);
             });
 
@@ -212,7 +210,7 @@ _settings(){
             <input id="sound-menu" type="checkbox" name="sound" value="Звук" ${this.sound.bell ? 'checked' : ''}>
         </div>
         <div id="playing-reach-size">
-         <label for="range-size">Размер поля</label>
+         <label for="this.boardView.size">Размер поля</label>
          <input id="range-size" type="range" name="reach-size" min="3" max="8" step="1" value="${this.boardView.size}" list="size-board">
          <datalist id="size-board">
             <option value="3" label="3&#10005;3">3&#10005;3</option>
@@ -233,6 +231,11 @@ _settings(){
     document.getElementById("range-size").addEventListener("mouseup", () => {
       this.boardView.size = document.getElementById("range-size").value;
       document.getElementById("description-size-board").innerText = `${this.boardView.size}✕${this.boardView.size}`;
+
+      while(document.getElementsByClassName("pise-all").length > 0) {
+           document.getElementsByClassName("pise-all")[0].remove();
+        }
+      this._generation();
     });
 
   document.getElementById("back-button-sound").addEventListener("click", () => {
@@ -264,10 +267,12 @@ _generation(){
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+  let countPices = Math.pow(this.boardView.size, 2);
   function createNewSet(newSetValue) {
 
-    if(newSetValue.size < 15){
-      newSetValue.add(getRandom(1, 15));
+
+    if(newSetValue.size < countPices - 1){
+      newSetValue.add(getRandom(1, countPices - 1));
       createNewSet(newSetValue);
     }
     return newSetValue;
@@ -291,7 +296,8 @@ _board(){
 
 _pieces(arrayPieces){
 
-  for (var i = 0; i < 16; i++) {
+
+  for (var i = 0; i < Math.pow(this.boardView.size, 2); i++) {
     let newElem = document.createElement("div");
     if(arrayPieces[i] != undefined){
       newElem.classList.add("piece-one");
@@ -300,6 +306,8 @@ _pieces(arrayPieces){
     };
     newElem.setAttribute("data-id", i+1);
     newElem.classList.add("pise-all");
+    newElem.style.height = 450 / this.boardView.size + "px";
+    newElem.style.width = 450 / this.boardView.size + "px";
     newElem.textContent = arrayPieces[i];
     document.getElementById("board-game").appendChild(newElem);
 
