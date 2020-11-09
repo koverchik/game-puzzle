@@ -24,7 +24,8 @@ empty:{
 
 time:{
   start: null,
-  now: null
+  countdown_min: null,
+  countdown_sec: null
 },
 
 sound:{
@@ -62,18 +63,44 @@ init(){
   this._footer();
   this._menu();
   this._settings();
+
+
 },
 
 _time(){
+  let start = Date.now();
+  this.time.start = start;
+  //Часы переводим в минуты
+  let min = Math.floor((start - Math.floor(start / 3600000)*3600000)/60000);
 
-  let start = new Date();
-  let min = start.getMinutes();
-  let second = start.getSeconds();
+  //Минуты равны секундам (первые 2 цифры)
+  let sec = Math.floor((start - Math.floor(start / 60000)*60000)/1000);
+
   let fragment = new DocumentFragment();
-  fragment =`<p id="time-game">Время: ${min}:${second}</p>`;
+  fragment =`<p id="time-game">Время: <span id="countdown-min"> </span>:<span id="countdown-sec"></span> </p>`;
   this.scoreboard.now.insertAdjacentHTML("beforeend", fragment);
+  this._timer(this.time);
+},
+
+_timer(time){
+  function addZero(n) {
+  return (parseInt(n, 10) < 10 ? '0' : '') + n;
+  }
+  let nowTime = Date.now();
+  let param = this.time;
+  // Минуты
+    let timecount = nowTime - time.start;
+
+    let min = addZero(Math.floor((timecount - Math.floor(timecount / 3600000)*3600000)/60000));
+    // Cекунды
+    let sec = addZero(Math.floor((timecount - Math.floor(timecount / 60000)*60000)/1000));
+
+    document.getElementById("countdown-min").innerText = min;
+    document.getElementById("countdown-sec").innerText = sec;
+   setInterval(this._timer, 1000, param);
 
 },
+
 _steps(){
   let fragment = new DocumentFragment();
   fragment =`<p>Шаги:<span id="step-one-game">${this.scoreboard.score}</span></p>`;
@@ -331,5 +358,6 @@ document.getElementById("one-sound").play();
     }
 window.addEventListener("DOMContentLoaded", function () {
   Puzzle.init();
+
 
 });
