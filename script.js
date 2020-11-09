@@ -25,7 +25,6 @@ empty:{
 time:{
   start: null,
   countdown: null
-
 },
 
 sound:{
@@ -102,13 +101,8 @@ _timer(time){
   }
   let nowTime = Date.now();
   let param = this.time;
-
-  let timecount = nowTime - time.start;
-   // + time.countdown;
-  time.countdown = timecount;
-
+  let timecount = nowTime - time.start + time.countdown;
   let min = addZero(Math.floor((timecount - Math.floor(timecount / 3600000)*3600000)/60000));
-
   let sec = addZero(Math.floor((timecount - Math.floor(timecount / 60000)*60000)/1000));
 
     document.getElementById("countdown-min").innerText = min;
@@ -116,10 +110,13 @@ _timer(time){
 
     let timeInterval = setInterval(this._timer, 1000, param);
 
-    document.getElementById("pause-game-button").addEventListener("click", () => {
+    function stopInterval() {
       document.getElementById("wrapper-start-button").style.display = "flex";
+      time.countdown = this.addTime;
       clearInterval(timeInterval);
-            });
+    }
+
+    document.getElementById("pause-game-button").addEventListener("click", {handleEvent: stopInterval, addTime: timecount});
 
 },
 
@@ -144,7 +141,7 @@ _pause(){
 _footer(){
   let fragment = new DocumentFragment();
   fragment =`<div id="wrapper-footer">
-    <div class="button-container"><button class="button-main">Новая игра</button></div>
+    <div class="button-container"><button id="new-game-without-refresh" class="button-main">Новая игра</button></div>
     <div class="button-main" id="sound-button-click"><button class="sound-game">&#128361;</button></div>
     <div class="button-container" id="menu-button"><button class="button-main">Меню</button></div>
     </div>`;
@@ -154,13 +151,19 @@ _footer(){
     this.sound.bell ? this.sound.bell = false : this.sound.bell = true;
     this.sound.bell ? document.getElementById("sound-menu").checked = true : document.getElementById("sound-menu").checked = false;
 
-    console.log(this.sound.bell);
         });
 
   document.getElementById("menu-button").addEventListener("click", () => {
     document.getElementById("wrapper-menu").style.visibility = "visible";
     document.getElementById("wrapper-menu").style.animation = "move_menu 1s 1";
+          });
 
+  document.getElementById("new-game-without-refresh").addEventListener("click", () => {
+    while(document.getElementsByClassName("pise-all").length > 0) {
+         document.getElementsByClassName("pise-all")[0].remove();
+      }
+
+    this._generation();
           });
       },
 
@@ -235,6 +238,7 @@ _settings(){
       while(document.getElementsByClassName("pise-all").length > 0) {
            document.getElementsByClassName("pise-all")[0].remove();
         }
+
       this._generation();
     });
 
