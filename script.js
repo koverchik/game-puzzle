@@ -24,8 +24,8 @@ empty:{
 
 time:{
   start: null,
-  countdown_min: null,
-  countdown_sec: null
+  countdown: null
+
 },
 
 sound:{
@@ -56,14 +56,32 @@ init(){
   this.elements.puzzleContainer.appendChild(this.scoreboard.now);
   this.elements.main.appendChild(this.elements.puzzleContainer);
   document.body.appendChild(this.elements.main);
-  this._time();
+
   this._steps();
   this._pause();
   this._board();
   this._footer();
   this._menu();
   this._settings();
+  this._startGame();
+},
 
+_startGame(){
+  let fragment = new DocumentFragment();
+  fragment =`
+    <div id="wrapper-start-button">
+      <div >
+        <button class="button-main" id="start-continue">Начать игру</button>
+      </div>
+    </div>`;
+
+    document.getElementById("board-game").insertAdjacentHTML("afterbegin", fragment);
+
+    document.getElementById("start-continue").addEventListener("click", () => {
+
+      document.getElementById("wrapper-start-button").style.display = "none";
+        this._time();
+    });
 
 },
 
@@ -76,9 +94,7 @@ _time(){
   //Минуты равны секундам (первые 2 цифры)
   let sec = Math.floor((start - Math.floor(start / 60000)*60000)/1000);
 
-  let fragment = new DocumentFragment();
-  fragment =`<p id="time-game">Время: <span id="countdown-min"> </span>:<span id="countdown-sec"></span> </p>`;
-  this.scoreboard.now.insertAdjacentHTML("beforeend", fragment);
+
   this._timer(this.time);
 },
 
@@ -88,20 +104,32 @@ _timer(time){
   }
   let nowTime = Date.now();
   let param = this.time;
-  // Минуты
-    let timecount = nowTime - time.start;
 
-    let min = addZero(Math.floor((timecount - Math.floor(timecount / 3600000)*3600000)/60000));
-    // Cекунды
-    let sec = addZero(Math.floor((timecount - Math.floor(timecount / 60000)*60000)/1000));
+  let timecount = nowTime - time.start + time.countdown;
+  time.countdown = timecount;
+
+  let min = addZero(Math.floor((timecount - Math.floor(timecount / 3600000)*3600000)/60000));
+
+  let sec = addZero(Math.floor((timecount - Math.floor(timecount / 60000)*60000)/1000));
 
     document.getElementById("countdown-min").innerText = min;
     document.getElementById("countdown-sec").innerText = sec;
-   setInterval(this._timer, 1000, param);
+
+    let timeInterval = setInterval(this._timer, 1000, param);
+
+    document.getElementById("pause-game-button").addEventListener("click", () => {
+      document.getElementById("wrapper-start-button").style.display = "flex";
+
+      clearInterval(timeInterval);
+            });
 
 },
 
 _steps(){
+  let fragment_time = new DocumentFragment();
+  fragment_time =`<p id="time-game">Время: <span id="countdown-min"> 00</span>:<span id="countdown-sec">00</span> </p>`;
+  this.scoreboard.now.insertAdjacentHTML("beforeend", fragment_time);
+
   let fragment = new DocumentFragment();
   fragment =`<p>Шаги:<span id="step-one-game">${this.scoreboard.score}</span></p>`;
   this.scoreboard.now.insertAdjacentHTML("beforeend", fragment);
@@ -109,8 +137,10 @@ _steps(){
 
 _pause(){
   let fragment = new DocumentFragment();
-  fragment =`<div class="button-container"><button class="button-main">Пауза</button></div>`;
+  fragment =`<div class="button-container" id="pause-game-button"><button class="button-main">Пауза</button></div>`;
   this.scoreboard.now.insertAdjacentHTML("beforeend", fragment);
+
+
 },
 
 _footer(){
@@ -140,7 +170,7 @@ _menu(){
   let fragment = new DocumentFragment();
   fragment =`
   <div id="wrapper-menu">
-    <p id="logo-style">Gem puzzle</p>
+    <p id="logo-style">Game puzzle</p>
     <nav id="item-menu">
       <ul>
         <li id="save-game">Сохранить</li>

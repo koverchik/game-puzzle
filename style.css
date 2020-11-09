@@ -81,8 +81,8 @@ cursor: pointer;
     border: none;
 
   }
-  .sound-game:hover{
-    cursor: pointer;
+  #sound-button-click:hover{
+    cursor: pointer
     }
 
   .sound-game-border{
@@ -267,4 +267,20 @@ to {position: relative; bottom:0;}
 }
 #change-block div{
   margin: 25px 0;
+}
+
+#wrapper-start-button{
+  width: 450px;
+  height: 450px;
+  position: absolute;
+  background-image: url(assets/bacground.jpg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#wrapper-start-button button{
+    font-size: 2rem;
+    border: 5px solid;
+    cursor: pointer;
 }
