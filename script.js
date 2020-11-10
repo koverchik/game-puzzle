@@ -24,7 +24,8 @@ empty:{
 
 time:{
   start: null,
-  countdown: null
+  countdown: null,
+  stop:null
 },
 
 sound:{
@@ -58,9 +59,10 @@ init(){
 
   this._steps();
   this._pause();
-  this._board();
   this._footer();
+  this._board();
   this._menu();
+  this._congretulationSection();
   this._settings();
   this._startGame();
 },
@@ -74,7 +76,7 @@ _startGame(){
       </div>
     </div>`;
 
-    document.getElementById("board-game").insertAdjacentHTML("afterbegin", fragment);
+    document.getElementById("wapper-board").insertAdjacentHTML("afterbegin", fragment);
 
     document.getElementById("start-continue").addEventListener("click", () => {
 
@@ -109,12 +111,12 @@ _timer(time){
     document.getElementById("countdown-sec").innerText = sec;
 
     let timeInterval = setInterval(this._timer, 1000, param);
-
     function stopInterval() {
       document.getElementById("wrapper-start-button").style.display = "flex";
       time.countdown = this.addTime;
       clearInterval(timeInterval);
     }
+
     document.getElementById("pause-game-button").addEventListener("click", {handleEvent: stopInterval, addTime: timecount});
 },
 
@@ -143,7 +145,7 @@ _footer(){
     <div class="button-main" id="sound-button-click"><button class="sound-game">&#128361;</button></div>
     <div class="button-container" id="menu-button"><button class="button-main">Меню</button></div>
     </div>`;
-  this.elements.puzzleContainer.insertAdjacentHTML("beforeend", fragment);
+  this.elements.main.insertAdjacentHTML("afterend", fragment);
   document.getElementById("sound-button-click").addEventListener("click", () => {
     this.sound.bell ? document.getElementById("sound-button-click").classList.add("sound-game-border"): document.getElementById("sound-button-click").classList.remove("sound-game-border");
     this.sound.bell ? this.sound.bell = false : this.sound.bell = true;
@@ -270,8 +272,23 @@ _settings(){
   });
 },
 
-_switch(){
+_scoreBetterGame(){
+  let fragment = new DocumentFragment();
 
+  fragment =`
+    <div id="change-block">
+    <table>
+    <tr>
+      <th>Шаги</th>
+      <th>Время</th>
+      <th>Вид</th>
+      <tr><td>214</td><td>34:45</td><td>36</td><td>number</td></tr>
+    </tr>
+    </table>
+      <div id="back-button-score-bord">&#128281;</div>
+    </div>`;
+
+  this.elements.menu.insertAdjacentHTML("afterend", fragment);
 },
 
 _generation(){
@@ -293,8 +310,8 @@ _generation(){
     }
     return newSetValue;
   }
-  this._pieces(Array.from(createNewSet(newSetValue)));
-
+  // this._pieces(Array.from(createNewSet(newSetValue)));
+  this._pieces([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 13, 14, 11])
   },
 
 _board(){
@@ -380,27 +397,72 @@ _clickChangePlase(elem){
     if(this.sound.bell == true){this._audioMove();}
     this.scoreboard.score  = this.scoreboard.score  + 1;
     document.getElementById("step-one-game").innerText = this.scoreboard.score;
+    let pisesLocation = document.getElementsByClassName("piece-one");
+    let stateGame = true;
+    for (var i = 0; i < pisesLocation.length; i++) {
+        if((pisesLocation[i].dataset.id == pisesLocation[i].textContent) == false){
+          stateGame = (pisesLocation[i].dataset.id == pisesLocation[i].textContent);
+          break}
+    }
+    if(stateGame){this._congretulationsPlayer();
+    }
 
   }
 },
+
+_congretulationsPlayer(){
+
+let winner =[{
+  time_min: document.getElementById("countdown-min").textContent,
+  time_sec: document.getElementById("countdown-sec").textContent,
+  score: this.scoreboard.score,
+  kind: this.boardView.type
+}];
+  let token_winer = Math.floor(Math.random()*1000000000000000);
+
+ localStorage.setItem('winner_'+token_winer, JSON.stringify(winner));
+  document.getElementById("wrapper-congretulation").style.display = "flex";
+  document.getElementById("scoreboard-ongretulations-player").textContent = this.scoreboard.score;
+  document.getElementById("scoreboard-min").textContent = document.getElementById("countdown-min").textContent;
+  document.getElementById("scoreboard-sec").textContent = document.getElementById("countdown-sec").textContent;
+
+},
+
+_congretulationSection(){
+  let fragment = new DocumentFragment();
+  fragment =`
+  <div id="wrapper-congretulation">
+      <div id="congratulation-logo"><div>Поздравляю,</div><div>пазл собран!</div></div>
+      <div class="wrapper-score-bord">Количество шагов: <p id="scoreboard-ongretulations-player"></p></div>
+      <div class="wrapper-score-bord">Время: <p id="scoreboard-min"></p>:<p id="scoreboard-sec"></p></div>
+      <div id="back-button-congratulation">Новая игра</div>
+ </div>`;
+  this.elements.main.insertAdjacentHTML("beforeend", fragment);
+  document.getElementById("back-button-congratulation").addEventListener("click", () => {
+    document.getElementById("wrapper-congretulation").style.display = "none";
+    while(document.getElementsByClassName("pise-all").length > 0) {
+         document.getElementsByClassName("pise-all")[0].remove();
+      }
+    this.time.start = null;
+    this.scoreboard.score = 0;
+    document.getElementById("step-one-game").innerText = this.scoreboard.score;
+    this._time();
+    this._generation();
+          });
+},
+
 _animation(direction){
-
-
   if(direction == "right"){
     this.empty.elem.style.animation = "move_piece_right 2s ease 0s forwards 1";
-
   }
   if(direction == "left"){
     this.empty.elem.style.animation = "move_piece_left 2s ease 0s forwards 1";
-
   }
   if(direction == "top"){
     this.empty.elem.style.animation = "move_piece_top 2s ease 0s forwards 1";
-
   }
   if(direction == "bottom"){
     this.empty.elem.style.animation = "move_piece_bottom 2s ease 0s forwards 1";
-
   }
 },
 
@@ -412,6 +474,4 @@ document.getElementById("one-sound").play();
     }
 window.addEventListener("DOMContentLoaded", function () {
   Puzzle.init();
-
-
 });

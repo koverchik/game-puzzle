@@ -96,6 +96,8 @@ cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: white;
+    border-top: 2px dashed #BA0016;
   }
   #logo-style{
     font-size: 3rem;
@@ -283,4 +285,39 @@ to {position: relative; bottom:0;}
     font-size: 2rem;
     border: 5px solid;
     cursor: pointer;
+}
+#wrapper-congretulation{
+    box-sizing: border-box;
+    background: white;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 100%;
+    height: 100%;
+    border: 60px solid #40c4c8;
+    padding: 60px;
+    border-image: url(assets/ornament1.png) 60 round round;
+
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+
+#congratulation-logo{
+  font-size: 3rem;
+  color: #BA0016;
+  margin-bottom: 40px;
+}
+
+.wrapper-score-bord{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#back-button-congratulation{
+  margin-top: 20px;
+  font-size: 2rem;
+  cursor: pointer;
 }
