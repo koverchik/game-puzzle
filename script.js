@@ -115,9 +115,7 @@ _timer(time){
       time.countdown = this.addTime;
       clearInterval(timeInterval);
     }
-
     document.getElementById("pause-game-button").addEventListener("click", {handleEvent: stopInterval, addTime: timecount});
-
 },
 
 _steps(){
@@ -162,7 +160,10 @@ _footer(){
     while(document.getElementsByClassName("pise-all").length > 0) {
          document.getElementsByClassName("pise-all")[0].remove();
       }
-
+    this.time.start = null;
+    this.scoreboard.score = 0;
+    document.getElementById("step-one-game").innerText = this.scoreboard.score;
+    this._time();
     this._generation();
           });
       },
@@ -194,6 +195,17 @@ _menu(){
   document.getElementById("back-button").addEventListener("click", () => {
     document.getElementById("wrapper-menu").style.visibility = "hidden";
     document.getElementById("wrapper-menu").style.animation = "none";
+          });
+  document.getElementById("new-game-menu").addEventListener("click", () => {
+    document.getElementById("wrapper-menu").style.visibility = "hidden";
+    while(document.getElementsByClassName("pise-all").length > 0) {
+         document.getElementsByClassName("pise-all")[0].remove();
+      }
+    this.time.start = null;
+    this.scoreboard.score = 0;
+    document.getElementById("step-one-game").innerText = this.scoreboard.score;
+    this._time();
+    this._generation();
           });
 },
 
@@ -238,7 +250,7 @@ _settings(){
       while(document.getElementsByClassName("pise-all").length > 0) {
            document.getElementsByClassName("pise-all")[0].remove();
         }
-
+      this._time();
       this._generation();
     });
 
