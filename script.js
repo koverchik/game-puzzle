@@ -60,10 +60,10 @@ init(){
   this._steps();
   this._pause();
   this._footer();
-  this._board();
   this._menu();
   this._congretulationSection();
   this._settings();
+  this._board();
   this._startGame();
 },
 
@@ -145,7 +145,7 @@ _footer(){
     <div class="button-main" id="sound-button-click"><button class="sound-game">&#128361;</button></div>
     <div class="button-container" id="menu-button"><button class="button-main">Меню</button></div>
     </div>`;
-  this.elements.main.insertAdjacentHTML("afterend", fragment);
+  document.getElementById("wapper-bord").insertAdjacentHTML("afterend", fragment);
   document.getElementById("sound-button-click").addEventListener("click", () => {
     this.sound.bell ? document.getElementById("sound-button-click").classList.add("sound-game-border"): document.getElementById("sound-button-click").classList.remove("sound-game-border");
     this.sound.bell ? this.sound.bell = false : this.sound.bell = true;
@@ -191,13 +191,17 @@ _menu(){
   document.getElementById("settings").addEventListener("click", () => {
       document.getElementById("change-block").style.display = "block";
       document.getElementById("item-menu").style.display = "none";
-
   });
 
+  document.getElementById("table-better-result").addEventListener("click", () => {
+    document.getElementById("item-menu").style.display = "none";
+    this._recordsTable();
+          });
   document.getElementById("back-button").addEventListener("click", () => {
     document.getElementById("wrapper-menu").style.visibility = "hidden";
     document.getElementById("wrapper-menu").style.animation = "none";
           });
+
   document.getElementById("new-game-menu").addEventListener("click", () => {
     document.getElementById("wrapper-menu").style.visibility = "hidden";
     while(document.getElementsByClassName("pise-all").length > 0) {
@@ -209,6 +213,74 @@ _menu(){
     this._time();
     this._generation();
           });
+},
+//таблица результатов
+_recordsTable(){
+
+  let fragment = new DocumentFragment();
+  fragment =`
+      <div id="change-block-records">
+      <table id="records-table">
+        <tr id="result-bord">
+          <th></th>
+          <th>Шаги</th>
+          <th>Время</th>
+          <th>Вид</th>
+        </tr>
+      </table>
+      <div id="back-button-records">&#128281;</div>
+      </div>`;
+      this.elements.menu.insertAdjacentHTML("afterend", fragment);
+
+      const items = {...localStorage};
+      let arrayWiners = [];
+
+      for (let key in items) {
+        if(/winner_|[0-9]$/.test(key)){arrayWiners.push(JSON.parse(items[key]))};
+      }
+      //Сортировка по времени (если будет время добавить по шагам сортировку)
+      arrayWiners.sort(function (x, y) {
+        return x.time - y.time;
+      });
+      arrayWiners = arrayWiners.slice(0, 10)
+      function addZero(n) {
+      return (parseInt(n, 10) < 10 ? '0' : '') + n;
+      }
+
+      function converterSecToMin(time) {
+        let min =	Math.floor(time/60);
+        let sec =	time%60;
+        return addZero(min) +":" + addZero(sec);
+      }
+
+      for (var i = 0; i < arrayWiners.length; i++) {
+
+        let trWrapper = document.createElement("tr");
+
+        let namberResult = document.createElement("td");
+        namberResult.innerHTML = i + 1;
+        let oneStep = document.createElement("td");
+        oneStep.innerHTML = arrayWiners[i].score;
+
+        let oneTime = document.createElement("td");
+        oneTime.innerHTML = converterSecToMin(arrayWiners[i].time);
+
+        let oneKind = document.createElement("td");
+        oneKind.innerHTML = arrayWiners[i].kind +" " + arrayWiners[i].size + "&#10005;" + arrayWiners[i].size;
+        trWrapper.append(namberResult);
+        trWrapper.append(oneStep);
+        trWrapper.append(oneTime);
+        trWrapper.append(oneKind);
+
+        document.getElementById("records-table").append(trWrapper);
+      }
+
+      document.getElementById("back-button-records").addEventListener("click", () => {
+          document.getElementById("item-menu").style.display = "block";
+          document.getElementById("change-block-records").style.display = "none";
+      });
+
+
 },
 
 _settings(){
@@ -272,24 +344,6 @@ _settings(){
   });
 },
 
-_scoreBetterGame(){
-  let fragment = new DocumentFragment();
-
-  fragment =`
-    <div id="change-block">
-    <table>
-    <tr>
-      <th>Шаги</th>
-      <th>Время</th>
-      <th>Вид</th>
-      <tr><td>214</td><td>34:45</td><td>36</td><td>number</td></tr>
-    </tr>
-    </table>
-      <div id="back-button-score-bord">&#128281;</div>
-    </div>`;
-
-  this.elements.menu.insertAdjacentHTML("afterend", fragment);
-},
 
 _generation(){
 
@@ -411,13 +465,13 @@ _clickChangePlase(elem){
 },
 
 _congretulationsPlayer(){
-
-let winner =[{
-  time_min: document.getElementById("countdown-min").textContent,
-  time_sec: document.getElementById("countdown-sec").textContent,
+let timeWin = Number(document.getElementById("countdown-min").textContent* 60) + Number(document.getElementById("countdown-sec").textContent);
+let winner ={
+  time: timeWin,
   score: this.scoreboard.score,
-  kind: this.boardView.type
-}];
+  kind: this.boardView.type,
+  size: this.boardView.size,
+};
   let token_winer = Math.floor(Math.random()*1000000000000000);
 
  localStorage.setItem('winner_'+token_winer, JSON.stringify(winner));
