@@ -116,7 +116,9 @@ cursor: pointer;
   right: 0px;
   width: 100%;
   height: 100%;
-  border:  20px ridge #9A9A9A;
+  border: 60px solid #40c4c8;
+  padding: 60px;
+  border-image: url(assets/ornament1.png) 60 round round;
   z-index: 1;
   }
 
@@ -308,6 +310,9 @@ to {position: relative; bottom:0;}
   font-size: 3rem;
   color: #BA0016;
   margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .wrapper-score-bord{
@@ -325,7 +330,7 @@ to {position: relative; bottom:0;}
 #change-block-records{
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
   font-size: 2rem;
@@ -352,4 +357,44 @@ font-size: 1.3rem;
 #records-table td {
   padding: 5px 30px;
   border-bottom: 2px dashed #BA0016;
+}
+#container-menu{
+  display: flex;
+  flex-direction: row;
+}
+
+#change-block-save-game{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 2rem;
+  padding: 20px;
+  height: calc(100% - 50px);
+  width: 100%;
+  font-family: 'Kosugi Maru', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#back-button-game{
+  cursor: pointer;
+}
+#save-game-table{
+  font-size: 1.3rem;
+}
+
+#save-game-table td {
+    padding: 5px 30px;
+
+    border-bottom: 2px dashed #BA0016;
+
+}
+#save-game-table tr{
+  cursor: pointer;
+}
+#save-game-table tr:hover{
+  background: red;
+
 }

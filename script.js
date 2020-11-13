@@ -45,6 +45,7 @@ moves:{
 },
 
 init(){
+
   this.elements.main = document.createElement("div");
   this.elements.puzzleContainer = document.createElement("div");
   this.scoreboard.now = document.createElement("div");
@@ -58,7 +59,6 @@ init(){
   document.body.appendChild(this.elements.main);
 
   this._steps();
-  this._pause();
   this._footer();
   this._menu();
   this._congretulationSection();
@@ -88,6 +88,7 @@ _startGame(){
 
 _time(){
   let start = Date.now();
+
   this.time.start = start;
 
   let min = Math.floor((start - Math.floor(start / 3600000)*3600000)/60000);
@@ -106,17 +107,17 @@ _timer(time){
   let timecount = nowTime - time.start + time.countdown;
   let min = addZero(Math.floor((timecount - Math.floor(timecount / 3600000)*3600000)/60000));
   let sec = addZero(Math.floor((timecount - Math.floor(timecount / 60000)*60000)/1000));
-
+  console.log(this.time);
     document.getElementById("countdown-min").innerText = min;
     document.getElementById("countdown-sec").innerText = sec;
 
     let timeInterval = setInterval(this._timer, 1000, param);
+
     function stopInterval() {
       document.getElementById("wrapper-start-button").style.display = "flex";
       time.countdown = this.addTime;
       clearInterval(timeInterval);
     }
-
     document.getElementById("pause-game-button").addEventListener("click", {handleEvent: stopInterval, addTime: timecount});
 },
 
@@ -126,36 +127,42 @@ _steps(){
   this.scoreboard.now.insertAdjacentHTML("beforeend", fragment_time);
 
   let fragment = new DocumentFragment();
-  fragment =`<p>Шаги:<span id="step-one-game">${this.scoreboard.score}</span></p>`;
-  this.scoreboard.now.insertAdjacentHTML("beforeend", fragment);
-},
-
-_pause(){
-  let fragment = new DocumentFragment();
-  fragment =`<div class="button-container" id="pause-game-button"><button class="button-main">Пауза</button></div>`;
+  fragment =`<p>Шаги:<span id="step-one-game">${this.scoreboard.score}</span></p>
+  <div class="button-main" id="sound-button-click"><button class="sound-game">&#128361;</button></div>`;
   this.scoreboard.now.insertAdjacentHTML("beforeend", fragment);
 
-
-},
-
-_footer(){
-  let fragment = new DocumentFragment();
-  fragment =`<div id="wrapper-footer">
-    <div class="button-container"><button id="new-game-without-refresh" class="button-main">Новая игра</button></div>
-    <div class="button-main" id="sound-button-click"><button class="sound-game">&#128361;</button></div>
-    <div class="button-container" id="menu-button"><button class="button-main">Меню</button></div>
-    </div>`;
-  document.getElementById("wapper-bord").insertAdjacentHTML("afterend", fragment);
   document.getElementById("sound-button-click").addEventListener("click", () => {
     this.sound.bell ? document.getElementById("sound-button-click").classList.add("sound-game-border"): document.getElementById("sound-button-click").classList.remove("sound-game-border");
     this.sound.bell ? this.sound.bell = false : this.sound.bell = true;
     this.sound.bell ? document.getElementById("sound-menu").checked = true : document.getElementById("sound-menu").checked = false;
-
         });
+},
+
+
+_footer(){
+  let fragment = new DocumentFragment();
+  fragment =`<div id="wrapper-footer">
+      <div class="button-container"><button id="new-game-without-refresh" class="button-main">Новая игра</button></div>
+      <div class="button-container" id="menu-button"><button class="button-main">Меню</button></div>
+      <div class="button-container" id="pause-game-button"><button class="button-main">Пауза</button></div>
+      <div class="button-container"><button id="save-game-button" class="button-main">Сохранить</button></div>
+    </div>`;
+  document.getElementById("wapper-bord").insertAdjacentHTML("afterend", fragment);
 
   document.getElementById("menu-button").addEventListener("click", () => {
     document.getElementById("wrapper-menu").style.visibility = "visible";
     document.getElementById("wrapper-menu").style.animation = "move_menu 1s 1";
+          });
+  document.getElementById("save-game-button").addEventListener("click", () => {
+      this._saveGame();
+      document.getElementById("wrapper-menu").style.visibility = "visible";
+      document.getElementById("item-menu").style.display = "none";
+      console.log(document.getElementById("change-block-save-game"));
+      if(!document.getElementById("change-block-save-game")){
+        this._oldGame();}else {
+          document.getElementById("change-block-save-game").remove();
+          this._oldGame();
+          }
           });
 
   document.getElementById("new-game-without-refresh").addEventListener("click", () => {
@@ -170,6 +177,126 @@ _footer(){
           });
       },
 
+_saveGame(){
+  let time = Number(document.getElementById("countdown-min").textContent* 60) + Number(document.getElementById("countdown-sec").textContent);
+  let arrayPieces = [];
+  let arrayElements = document.getElementsByClassName("pise-all");
+  for (var i = 0; i < arrayElements.length; i++) {
+    arrayPieces.push(arrayElements[i].textContent);
+  }
+  let token_game = Math.floor(Math.random()*1000000000000000);
+  let gamer = {
+    pieces: arrayPieces,
+    time: time,
+    score: this.scoreboard.score,
+    size: this.boardView.size,
+    kind: this.boardView.type,
+    token: token_game,
+    time_start: this.time.start,
+    time_countdown: time*1000,
+    time_stop: this.time.stop
+  };
+  console.log(this);
+  localStorage.setItem('saveGame_'+token_game, JSON.stringify(gamer));
+
+},
+
+_oldGame(){
+  let fragment = new DocumentFragment();
+
+  fragment =`
+        <div id="change-block-save-game">
+          <table id="save-game-table">
+            <tr id="save-game-bord">
+              <th></th>
+              <th>Шаги</th>
+              <th>Время</th>
+              <th>Вид</th>
+            </tr>
+          </table>
+          <div id="back-button-game">&#128281;</div>
+        </div>`;
+
+  this.elements.menu.insertAdjacentHTML("afterend", fragment);
+  document.getElementById("back-button-game").addEventListener("click", () => {
+      document.getElementById("item-menu").style.display = "block";
+      document.getElementById("change-block-save-game").style.display = "none";
+  });
+
+  const items = {...localStorage};
+  let arrayWiners = [];
+
+  for (let key in items) {
+    if(/saveGame_/.test(key)){arrayWiners.push(JSON.parse(items[key]))};
+
+  }
+
+  arrayWiners = arrayWiners.slice(0, 10);
+  function addZero(n) {
+  return (parseInt(n, 10) < 10 ? '0' : '') + n;
+  }
+
+  function converterSecToMin(time) {
+    let min =	Math.floor(time/60);
+    let sec =	time%60;
+    return addZero(min) +":" + addZero(sec);
+  }
+
+  for (var i = 0; i < arrayWiners.length; i++) {
+
+    let trWrapper = document.createElement("tr");
+    trWrapper.setAttribute("id", arrayWiners[i].token);
+
+    let namberResult = document.createElement("td");
+    namberResult.innerHTML = i + 1;
+
+    let oneTime = document.createElement("td");
+    oneTime.innerHTML = converterSecToMin(arrayWiners[i].time);
+
+    let oneStep = document.createElement("td");
+    oneStep.innerHTML = arrayWiners[i].score;
+
+    let oneKind = document.createElement("td");
+    oneKind.innerHTML = arrayWiners[i].kind +" " + arrayWiners[i].size + "&#10005;" + arrayWiners[i].size;
+    trWrapper.append(namberResult);
+    trWrapper.append(oneStep);
+    trWrapper.append(oneTime);
+    trWrapper.append(oneKind);
+
+    document.getElementById("save-game-table").append(trWrapper);
+
+
+    document.getElementById(arrayWiners[i].token).addEventListener("click", {handleEvent: _loadGame, arrayPises: arrayWiners[i], base: this});
+
+    const loadGame = _loadGame.bind(Puzzle);
+
+      function _loadGame(arrayPises){
+      document.getElementById("wrapper-menu").style.visibility = "hidden";
+      document.getElementById("step-one-game").innerHTML = this.arrayPises.score;
+      this.base.scoreboard.score = this.arrayPises.score;
+      this.base.boardView.size = this.arrayPises.size;
+      this.base.boardView.type = this.arrayPises.kind;
+      function addZero(n) {
+        return (parseInt(n, 10) < 10 ? '0' : '') + n;}
+        function converterMin(time) {return addZero(Math.floor(time/60))};
+        function converterSec(time) {return addZero(time%60)};
+      document.getElementById("countdown-min").innerHTML = converterMin(this.arrayPises.time);
+      document.getElementById("countdown-sec").innerHTML = converterSec(this.arrayPises.time);
+        this.base.time.start = Date.now();
+        this.base.time.countdown = this.arrayPises.time_countdown;
+      while(document.getElementsByClassName("pise-all").length > 0) {
+           document.getElementsByClassName("pise-all")[0].remove();
+        }
+      document.getElementById("change-block-save-game").style.display = "none";
+      document.getElementById("item-menu").style.display = "block";
+      this.base._pieces(this.arrayPises.pieces);
+      this.base._timer(this.base.time);
+    };
+  }
+},
+
+
+
 _menu(){
   let fragment = new DocumentFragment();
   fragment =`
@@ -177,7 +304,7 @@ _menu(){
     <p id="logo-style">Game puzzle</p>
     <nav id="item-menu">
       <ul>
-        <li id="save-game">Сохранить</li>
+        <li id="save-game">Сохраненные</li>
         <li id="new-game-menu">Новая игра</li>
         <li id="table-better-result">Таблица рекордов</li>
         <li id="settings">Настройки</li>
@@ -186,7 +313,7 @@ _menu(){
     </nav>
     </div>`;
 
-  this.elements.puzzleContainer.insertAdjacentHTML("beforeend", fragment);
+  this.elements.main.insertAdjacentHTML("beforeend", fragment);
   this.elements.menu = document.getElementById("logo-style");
   document.getElementById("settings").addEventListener("click", () => {
       document.getElementById("change-block").style.display = "block";
@@ -196,6 +323,11 @@ _menu(){
   document.getElementById("table-better-result").addEventListener("click", () => {
     document.getElementById("item-menu").style.display = "none";
     this._recordsTable();
+          });
+
+  document.getElementById("save-game").addEventListener("click", () => {
+    document.getElementById("item-menu").style.display = "none";
+    this._oldGame();
           });
   document.getElementById("back-button").addEventListener("click", () => {
     document.getElementById("wrapper-menu").style.visibility = "hidden";
@@ -236,8 +368,10 @@ _recordsTable(){
       let arrayWiners = [];
 
       for (let key in items) {
-        if(/winner_|[0-9]$/.test(key)){arrayWiners.push(JSON.parse(items[key]))};
+        if(/winner_/.test(key)){arrayWiners.push(JSON.parse(items[key]))};
+
       }
+
       //Сортировка по времени (если будет время добавить по шагам сортировку)
       arrayWiners.sort(function (x, y) {
         return x.time - y.time;
@@ -355,8 +489,8 @@ _generation(){
   }
 
   let countPices = Math.pow(this.boardView.size, 2);
-  function createNewSet(newSetValue) {
 
+  function createNewSet(newSetValue) {
 
     if(newSetValue.size < countPices - 1){
       newSetValue.add(getRandom(1, countPices - 1));
@@ -364,8 +498,9 @@ _generation(){
     }
     return newSetValue;
   }
-  // this._pieces(Array.from(createNewSet(newSetValue)));
-  this._pieces([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 13, 14, 11])
+
+  this._pieces(Array.from(createNewSet(newSetValue)));
+  // this._pieces([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 13, 14, 11])
   },
 
 _board(){
@@ -383,11 +518,10 @@ _board(){
 
 _pieces(arrayPieces){
 
-
   for (var i = 0; i < Math.pow(this.boardView.size, 2); i++) {
     let newElem = document.createElement("div");
-    if(arrayPieces[i] != undefined){
-      newElem.classList.add("piece-one");
+    if((arrayPieces[i] != undefined)){
+      if(arrayPieces[i] == ""){ newElem.setAttribute("id", "empty-plase");}else{newElem.classList.add("piece-one");}
     }else{
     newElem.setAttribute("id", "empty-plase");
     };
@@ -484,9 +618,10 @@ let winner ={
 
 _congretulationSection(){
   let fragment = new DocumentFragment();
+
   fragment =`
   <div id="wrapper-congretulation">
-      <div id="congratulation-logo"><div>Поздравляю,</div><div>пазл собран!</div></div>
+      <div id="congratulation-logo"><div>Ура!</div><div>Вы решили головоломку</div></div>
       <div class="wrapper-score-bord">Количество шагов: <p id="scoreboard-ongretulations-player"></p></div>
       <div class="wrapper-score-bord">Время: <p id="scoreboard-min"></p>:<p id="scoreboard-sec"></p></div>
       <div id="back-button-congratulation">Новая игра</div>
@@ -528,4 +663,8 @@ document.getElementById("one-sound").play();
     }
 window.addEventListener("DOMContentLoaded", function () {
   Puzzle.init();
-});
+
+}
+
+
+);
