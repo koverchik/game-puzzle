@@ -107,7 +107,7 @@ _timer(time){
   let timecount = nowTime - time.start + time.countdown;
   let min = addZero(Math.floor((timecount - Math.floor(timecount / 3600000)*3600000)/60000));
   let sec = addZero(Math.floor((timecount - Math.floor(timecount / 60000)*60000)/1000));
-  console.log(this.time);
+
     document.getElementById("countdown-min").innerText = min;
     document.getElementById("countdown-sec").innerText = sec;
 
@@ -157,7 +157,6 @@ _footer(){
       this._saveGame();
       document.getElementById("wrapper-menu").style.visibility = "visible";
       document.getElementById("item-menu").style.display = "none";
-      console.log(document.getElementById("change-block-save-game"));
       if(!document.getElementById("change-block-save-game")){
         this._oldGame();}else {
           document.getElementById("change-block-save-game").remove();
@@ -170,6 +169,7 @@ _footer(){
          document.getElementsByClassName("pise-all")[0].remove();
       }
     this.time.start = null;
+    this.time.countdown = null;
     this.scoreboard.score = 0;
     document.getElementById("step-one-game").innerText = this.scoreboard.score;
     this._time();
@@ -196,7 +196,7 @@ _saveGame(){
     time_countdown: time*1000,
     time_stop: this.time.stop
   };
-  console.log(this);
+
   localStorage.setItem('saveGame_'+token_game, JSON.stringify(gamer));
 
 },
@@ -235,6 +235,9 @@ _oldGame(){
   function addZero(n) {
   return (parseInt(n, 10) < 10 ? '0' : '') + n;
   }
+  arrayWiners.sort(function (x, y) {
+    return y.score - x.score;
+  });
 
   function converterSecToMin(time) {
     let min =	Math.floor(time/60);
@@ -521,7 +524,7 @@ _pieces(arrayPieces){
   for (var i = 0; i < Math.pow(this.boardView.size, 2); i++) {
     let newElem = document.createElement("div");
     if((arrayPieces[i] != undefined)){
-      if(arrayPieces[i] == ""){ newElem.setAttribute("id", "empty-plase");}else{newElem.classList.add("piece-one");}
+      if(arrayPieces[i] == ""){ newElem.setAttribute("id", "empty-plase");}else{newElem.classList.add("piece-one");newElem.setAttribute("draggable", "true");}
     }else{
     newElem.setAttribute("id", "empty-plase");
     };
@@ -533,9 +536,37 @@ _pieces(arrayPieces){
     document.getElementById("board-game").appendChild(newElem);
 
 
+//  чтобы эфект drap&drop  работал
+
+      newElem.addEventListener('dragstart', function(event) {
+         dragged = event.target;
+         event.dataTransfer.setData("text/plain", this.textContent);
+         event.target.style.opacity = .5;
+                 });
+
+       newElem.addEventListener("dragover", function(event) {
+         event.preventDefault();
+       }, false);
+
+
+      newElem.addEventListener("drop", function(event) {
+        event.preventDefault();
+        if (event.target.getAttribute("id") == "empty-plase") {
+            event.target.classList.add("piece-one");
+            event.target.textContent = dragged.textContent;
+            event.target.removeAttribute("id");
+            event.target.draggable = "true";
+            event.target.style.opacity = 1;
+            dragged.setAttribute("id", "empty-plase");
+            dragged.classList.remove("piece-one");
+            dragged.draggable = "false";
+            dragged.textContent = "";
+                }
+      }, false);
+
     newElem.addEventListener("click", () => {
       this._clickChangePlase(newElem);
-            });
+              });
           }
       this._empty(document.getElementById("empty-plase"));
         },
@@ -549,6 +580,36 @@ _empty(newElem){
       this.empty.bottom = Math.ceil(newElem.getBoundingClientRect().bottom);
       this.empty.right = Math.ceil(newElem.getBoundingClientRect().right);
     },
+
+// _dragAndDrop(elem){
+//     elem.style.position = "absolute";
+//
+//     let shiftX = event.clientX;
+//     let shiftY = event.clientY;
+//
+//     console.log(event.clientX - elem.getBoundingClientRect().left);
+//     // console.log(elem.getBoundingClientRect().left);
+//
+//     function onMouseMove(event) {
+//       elem.style.left = event.clientX - elem.getBoundingClientRect().left + 'px';
+//       elem.style.top = event.clientY - elem.getBoundingClientRect().top + 'px';
+//      }
+//
+//     function moveAt(pageX, pageY) {
+//       elem.style.left = event.clientX - elem.getBoundingClientRect().left + 'px';
+//       elem.style.top = event.clientY - elem.getBoundingClientRect().top + 'px';
+//     }
+//      moveAt(shiftX, shiftY);
+//
+//     elem.addEventListener('mousemove', onMouseMove);
+//     elem.style.background = "black";
+//
+//     elem.onmouseup = function() {
+//       elem.removeEventListener('mousemove', onMouseMove);
+//       elem.onmouseup = null;
+//       };
+//
+// },
 
 _clickChangePlase(elem){
 
