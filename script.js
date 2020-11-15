@@ -416,8 +416,6 @@ _recordsTable(){
           document.getElementById("item-menu").style.display = "block";
           document.getElementById("change-block-records").style.display = "none";
       });
-
-
 },
 
 _settings(){
@@ -535,39 +533,13 @@ _pieces(arrayPieces){
     newElem.textContent = arrayPieces[i];
     document.getElementById("board-game").appendChild(newElem);
 
-
-//  чтобы эфект drap&drop  работал
-
-      newElem.addEventListener('dragstart', function(event) {
-         dragged = event.target;
-         event.dataTransfer.setData("text/plain", this.textContent);
-         event.target.style.opacity = .5;
-                 });
-
-       newElem.addEventListener("dragover", function(event) {
-         event.preventDefault();
-       }, false);
-
-
-      newElem.addEventListener("drop", function(event) {
-        event.preventDefault();
-        if (event.target.getAttribute("id") == "empty-plase") {
-            event.target.classList.add("piece-one");
-            event.target.textContent = dragged.textContent;
-            event.target.removeAttribute("id");
-            event.target.draggable = "true";
-            event.target.style.opacity = 1;
-            dragged.setAttribute("id", "empty-plase");
-            dragged.classList.remove("piece-one");
-            dragged.draggable = "false";
-            dragged.textContent = "";
-                }
-      }, false);
+    this._dragAndDrop(newElem);
 
     newElem.addEventListener("click", () => {
       this._clickChangePlase(newElem);
               });
           }
+
       this._empty(document.getElementById("empty-plase"));
         },
 
@@ -581,35 +553,52 @@ _empty(newElem){
       this.empty.right = Math.ceil(newElem.getBoundingClientRect().right);
     },
 
-// _dragAndDrop(elem){
-//     elem.style.position = "absolute";
-//
-//     let shiftX = event.clientX;
-//     let shiftY = event.clientY;
-//
-//     console.log(event.clientX - elem.getBoundingClientRect().left);
-//     // console.log(elem.getBoundingClientRect().left);
-//
-//     function onMouseMove(event) {
-//       elem.style.left = event.clientX - elem.getBoundingClientRect().left + 'px';
-//       elem.style.top = event.clientY - elem.getBoundingClientRect().top + 'px';
-//      }
-//
-//     function moveAt(pageX, pageY) {
-//       elem.style.left = event.clientX - elem.getBoundingClientRect().left + 'px';
-//       elem.style.top = event.clientY - elem.getBoundingClientRect().top + 'px';
-//     }
-//      moveAt(shiftX, shiftY);
-//
-//     elem.addEventListener('mousemove', onMouseMove);
-//     elem.style.background = "black";
-//
-//     elem.onmouseup = function() {
-//       elem.removeEventListener('mousemove', onMouseMove);
-//       elem.onmouseup = null;
-//       };
-//
-// },
+_dragAndDrop(newElem){
+
+  newElem.addEventListener('dragstart', function(event) {
+     dragged = event.target;
+     event.dataTransfer.setData("text/plain", this.textContent);
+     event.target.style.opacity = .5;
+             });
+
+   newElem.addEventListener("dragover", function(event) {
+     event.preventDefault();
+
+   }, false);
+   
+   newElem.addEventListener("dragend", function(event) {
+    event.target.style.opacity = "";
+    }, false);
+
+  var bound = changePisesDropDrag.bind(this);
+
+  function changePisesDropDrag() {
+    this.empty.elem = dragged;
+    this.empty.top = Math.ceil(dragged.getBoundingClientRect().top);
+    this.empty.y = Math.ceil(dragged.getBoundingClientRect().y);
+    this.empty.left = Math.ceil(dragged.getBoundingClientRect().left);
+    this.empty.x = Math.ceil(dragged.getBoundingClientRect().x);
+    this.empty.bottom = Math.ceil(dragged.getBoundingClientRect().bottom);
+    this.empty.right = Math.ceil(dragged.getBoundingClientRect().right);
+    }
+
+  newElem.addEventListener("drop", function(event) {
+    event.preventDefault();
+    if (event.target.getAttribute("id") == "empty-plase") {
+        event.target.classList.add("piece-one");
+        event.target.textContent = dragged.textContent;
+        event.target.removeAttribute("id");
+        event.target.draggable = "true";
+        event.target.style.opacity = 1;
+        dragged.setAttribute("id", "empty-plase");
+        dragged.classList.remove("piece-one");
+        dragged.draggable = "false";
+        dragged.textContent = "";
+        bound();
+              }
+  }, false);
+
+},
 
 _clickChangePlase(elem){
 
