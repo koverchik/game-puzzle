@@ -432,6 +432,8 @@ _settings(){
             <p>Звук</p>
             <audio id="one-sound" src="assets/up-down.mp3"></audio>
             <input id="sound-menu" type="checkbox" name="sound" value="Звук" ${this.sound.bell ? 'checked' : ''}>
+            <audio id="one-step-sound" src="assets/up-move.mp3"></audio>
+            <audio id="one-second-sound" src="assets/down-move.mp3"></audio>
         </div>
         <div id="playing-reach-size">
          <label for="this.boardView.size">Размер поля</label>
@@ -559,13 +561,13 @@ _dragAndDrop(newElem){
      dragged = event.target;
      event.dataTransfer.setData("text/plain", this.textContent);
      event.target.style.opacity = .5;
-             });
+     });
 
    newElem.addEventListener("dragover", function(event) {
      event.preventDefault();
 
    }, false);
-   
+
    newElem.addEventListener("dragend", function(event) {
     event.target.style.opacity = "";
     }, false);
@@ -580,6 +582,7 @@ _dragAndDrop(newElem){
     this.empty.x = Math.ceil(dragged.getBoundingClientRect().x);
     this.empty.bottom = Math.ceil(dragged.getBoundingClientRect().bottom);
     this.empty.right = Math.ceil(dragged.getBoundingClientRect().right);
+    if(this.sound.bell == true){document.getElementById("one-step-sound").play();}
     }
 
   newElem.addEventListener("drop", function(event) {
