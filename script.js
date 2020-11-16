@@ -141,13 +141,31 @@ _steps(){
 
 _footer(){
   let fragment = new DocumentFragment();
-  fragment =`<div id="wrapper-footer">
-      <div class="button-container"><button id="new-game-without-refresh" class="button-main">Новая игра</button></div>
-      <div class="button-container" id="menu-button"><button class="button-main">Меню</button></div>
-      <div class="button-container" id="pause-game-button"><button class="button-main">Пауза</button></div>
-      <div class="button-container"><button id="save-game-button" class="button-main">Сохранить</button></div>
-    </div>`;
+  fragment =`
+    <div class="wrapper-all-footer">
+      <div class="button-main"  id="open-close-menu">&#9776;</div>
+      <div id="wrapper-footer">
+        <div class="button-container"><button id="new-game-without-refresh" class="button-main">Новая игра</button></div>
+        <div class="button-container" id="menu-button"><button class="button-main">Меню</button></div>
+        <div class="button-container" id="pause-game-button"><button class="button-main">Пауза</button></div>
+        <div class="button-container"><button id="save-game-button" class="button-main">Сохранить</button></div>
+      </div>
+      </div>
+    `;
   document.getElementById("wapper-bord").insertAdjacentHTML("afterend", fragment);
+
+  document.getElementById("open-close-menu").addEventListener("mouseover", () => {
+    document.getElementById("wrapper-footer").style.visibility = "visible";
+          });
+  document.getElementById("open-close-menu").addEventListener("mouseout", () => {
+    document.getElementById("wrapper-footer").style.visibility = "hidden";
+          });
+  document.getElementById("wrapper-footer").addEventListener("mouseout", () => {
+    document.getElementById("wrapper-footer").style.visibility = "hidden";
+          });
+  document.getElementById("wrapper-footer").addEventListener("mouseover", () => {
+    document.getElementById("wrapper-footer").style.visibility = "visible";
+          });
 
   document.getElementById("menu-button").addEventListener("click", () => {
     document.getElementById("wrapper-menu").style.visibility = "visible";
@@ -585,8 +603,22 @@ _dragAndDrop(newElem){
     }
 
   newElem.addEventListener("drop", function(event) {
-    event.preventDefault();
-    if (event.target.getAttribute("id") == "empty-plase") {
+  event.preventDefault();
+
+  let rightPositonElem = Math.ceil(dragged.getBoundingClientRect().right);
+  let leftPositonElem = Math.ceil(dragged.getBoundingClientRect().left);
+  let bottomPositonElem = Math.ceil(dragged.getBoundingClientRect().bottom);
+  let topPositonElem = Math.ceil(dragged.getBoundingClientRect().top);
+
+  let rightPositonTarget = Math.ceil(event.target.getBoundingClientRect().right);
+  let leftPositonTarget = Math.ceil(event.target.getBoundingClientRect().left);
+  let bottomPositonTarget = Math.ceil(event.target.getBoundingClientRect().bottom);
+  let topPositonTarget = Math.ceil(event.target.getBoundingClientRect().top);
+
+  if ((event.target.getAttribute("id") == "empty-plase")&& ((leftPositonTarget == rightPositonElem && topPositonTarget == topPositonElem && bottomPositonTarget == bottomPositonElem)||
+  (rightPositonTarget == leftPositonElem && topPositonTarget == topPositonElem && bottomPositonTarget == bottomPositonElem) ||
+  (topPositonTarget  == bottomPositonElem && leftPositonTarget == leftPositonElem && rightPositonTarget == rightPositonElem)||
+  (bottomPositonTarget == topPositonElem && leftPositonTarget == leftPositonElem && rightPositonTarget == rightPositonElem))) {
         event.target.classList.add("piece-one");
         event.target.textContent = dragged.textContent;
         event.target.removeAttribute("id");
@@ -624,8 +656,9 @@ _clickChangePlase(elem){
     if(this.empty.right == leftPositonElem){direction = "left";}
     if(this.empty.bottom == topPositonElem){direction = "top";}
     if(this.empty.top  == bottomPositonElem){direction = "bottom";}
-    this.empty.elem = elem;
+    this._animation(direction);
 
+    this.empty.elem = elem;
     this.empty.top = Math.ceil(elem.getBoundingClientRect().top);
     this.empty.y = Math.ceil(elem.getBoundingClientRect().y);
     this.empty.left = Math.ceil(elem.getBoundingClientRect().left);
@@ -633,7 +666,7 @@ _clickChangePlase(elem){
     this.empty.bottom = Math.ceil(elem.getBoundingClientRect().bottom);
     this.empty.right = Math.ceil(elem.getBoundingClientRect().right);
 
-    // this._animation(direction);
+
     if(this.sound.bell == true){this._audioMove();}
     this.scoreboard.score  = this.scoreboard.score  + 1;
     document.getElementById("step-one-game").innerText = this.scoreboard.score;
@@ -694,16 +727,16 @@ _congretulationSection(){
 
 _animation(direction){
   if(direction == "right"){
-    this.empty.elem.style.animation = "move_piece_right 2s ease 0s forwards 1";
+    this.empty.elem.style.animation = "move_piece_right 1s ease 0s forwards 1";
   }
   if(direction == "left"){
-    this.empty.elem.style.animation = "move_piece_left 2s ease 0s forwards 1";
+    this.empty.elem.style.animation = "move_piece_left 1s ease 0s forwards 1";
   }
   if(direction == "top"){
-    this.empty.elem.style.animation = "move_piece_top 2s ease 0s forwards 1";
+    this.empty.elem.style.animation = "move_piece_top 1s ease 0s forwards 1";
   }
   if(direction == "bottom"){
-    this.empty.elem.style.animation = "move_piece_bottom 2s ease 0s forwards 1";
+    this.empty.elem.style.animation = "move_piece_bottom 1s ease 0s forwards 1";
   }
 },
 
